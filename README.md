@@ -1,17 +1,17 @@
 # Clearstone Ventures LTD — Phase 2
 
-Development branch: `feature/clearstone-phase-2`. No Phase 2 production deployment or DNS changes are authorized. The currently published static Site remains unchanged.
+Phase 2 uses the Sites-supported Vinext/Cloudflare Worker runtime. The project retains its existing Site identity, logo, public audience and custom-domain configuration. Do not change DNS or deploy subsequent edits without the appropriate user authorization.
 
 ## Review locally
 
-Use Node 20+ and pnpm. Run `pnpm install`, `pnpm dev --hostname 127.0.0.1 --port 8137`, and open `http://127.0.0.1:8137`. The preserved logo and approved illustrative multifamily / NNN assets remain local. Optimized WebP copies are used in the new pages; original assets are retained.
+Use Node 22.13+ and pnpm. Run `pnpm install`, then `pnpm dev` (portable preview defaults to port 5173). For the exact deployed runtime, run `pnpm build`, then `pnpm start --port 8137` and open `http://127.0.0.1:8137`. The preserved logo and approved illustrative multifamily / NNN assets remain local. Optimized WebP copies are used in the new pages; original assets are retained.
 
 Pages: Home, About, Strategies, Multifamily, Net Lease, Residential Acquisitions, Our Approach, Contact and Privacy. Navigation, strategy content, inquiry categories, metadata helpers and editorial sections use shared components/data. No portfolio, performance, franchise relationship or institutional-capital claims are introduced. Decorative numbered labels remain removed.
 
 ## Checks
 
 - `pnpm lint`
-- `pnpm exec tsc --noEmit` (after Next has generated route types)
+- `pnpm typecheck`
 - `pnpm build`
 - With an unconfigured local server running: `node scripts/check-phase2.mjs`
 
@@ -33,15 +33,15 @@ Copy `.env.example` to `.env.local` for local setup. Until configured, the UI sa
 
 Server validation and spam controls include a honeypot, signed one-use tokens, minimum completion interval, expiry, per-email throttling and a per-instance budget. These controls are process-local; add a platform-level/durable limiter or an owner-approved challenge service before multi-instance public launch. Provider acceptance does not guarantee inbox delivery; the confirmation describes acceptance accurately. Real email delivery, deliverability and live abuse controls remain unverified without credentials and a deployment target.
 
-## Runtime and deployment implications
+## Runtime and deployment
 
-Phase 1 is a static export hosted by Sites, not a confirmed Vercel deployment. Phase 2 adds `/api/inquiry` and a server-rendered contact page, so `next.config.mjs` no longer sets `output: 'export'`. `pnpm build` produces a standard Next.js application; `pnpm start` serves it on a Node-compatible host such as a configured Vercel project. Do not upload `.next` into the static Sites manifest or deploy the old `out/` directory as Phase 2.
+The application uses the supported Sites Vinext starter build integration, including `sites()` in `vite.config.ts`. The Next-compatible application routes run on Cloudflare Workers, with React 19 and asynchronous route/search parameters. `pnpm build` emits the deployable Worker in `dist/server` and browser assets in `dist/client`. `pnpm start` runs that exact build locally through Wrangler.
 
-The tracked `.openai/hosting.json` retains the existing production identity/configuration and still describes Phase 1 output. A future Sites launch requires an approved server-capable migration, such as its Worker/Vinext workflow, or a separately configured server endpoint. A Vercel launch requires an owner-approved project, these environment variables and explicit production authorization. No Vercel project has been assumed or created.
+The tracked `.openai/hosting.json` retains `project_id` and omits `static` for Worker deployment. Source synchronization and packaging must use the Sites workflow. Do not upload the old `.next` or `out/` output as Phase 2. No Vercel project has been assumed or created. Secrets must be configured in the Site's server runtime, never client variables.
 
 Production names are `www.clearstone-ventures.com` (canonical) and `clearstone-ventures.com`. Review their current state immediately before an authorized launch. Do not alter GoDaddy DNS on this branch. Keep branch preview deployment disabled unless separately authorized when connecting any host later. Both domains are attached to Sites, so changing hosts requires an explicit cutover plan.
 
-Read-only check on October 19, 2026: the www URL returned HTTP 200 with Clearstone content and no WordPress error. The apex URL returned HTTP 404; Sites reported its certificate active but its custom-domain mapping still pending / `active_redeploying`. This is an outstanding hosting-mapping issue for a separately authorized production follow-up. No DNS or production deployment was changed in Phase 2.
+Read-only check during Phase 2 preparation on October 19, 2026: the www URL returned HTTP 200 with Clearstone content and no WordPress error. The apex URL returned HTTP 404 while its mapping was pending / `active_redeploying`. Recheck this mapping after publication. No GoDaddy DNS changes are part of the publishing migration.
 
 ## Review and merge
 

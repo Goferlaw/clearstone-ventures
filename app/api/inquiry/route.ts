@@ -4,7 +4,8 @@ import { validateInquiry } from "@/lib/inquiry";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-const localSecret = randomBytes(32).toString("hex");
+let localSecret: string | undefined;
+const developmentSecret = () => (localSecret ??= randomBytes(32).toString("hex"));
 const usedTokens = new Map<string, number>();
 const buckets = new Map<string, { count: number; expires: number }>();
 const MAX_BYTES = 16000;
@@ -17,7 +18,7 @@ const config = () => ({
     Buffer.byteLength(process.env.INQUIRY_TOKEN_SECRET, "utf8") >= 32
       ? process.env.INQUIRY_TOKEN_SECRET
       : process.env.NODE_ENV !== "production"
-        ? localSecret
+        ? developmentSecret()
         : undefined,
 });
 const response = (body: object, status = 200) =>

@@ -7,15 +7,16 @@ export const metadata = pageMetadata(
   "/contact",
 );
 export const dynamic = "force-dynamic";
-export default function Contact({
+export default async function Contact({
   searchParams,
 }: {
-  searchParams: { category?: string; audience?: string };
+  searchParams: Promise<{ category?: string; audience?: string }>;
 }) {
+  const query = await searchParams;
   const category = (inquiryCategories as readonly string[]).includes(
-    searchParams.category || "",
+    query.category || "",
   )
-    ? searchParams.category!
+    ? query.category!
     : "General Inquiry";
   const allowedAudiences = [
     "Property Owners",
@@ -25,8 +26,8 @@ export default function Contact({
     "Property Owners / Landowners",
     "Development Partners",
   ];
-  const audience = allowedAudiences.includes(searchParams.audience || "")
-    ? searchParams.audience!
+  const audience = allowedAudiences.includes(query.audience || "")
+    ? query.audience!
     : "";
   return (
     <>

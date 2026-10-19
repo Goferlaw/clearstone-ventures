@@ -5,3 +5,7 @@ node_modules
 .vercel
 out
 *.tsbuildinfo
+dist
+.wrangler
+.sites-runtime
+.dev.vars

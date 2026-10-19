@@ -1,6 +1,8 @@
 "use client";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { inquiryCategories } from "@/lib/site";
+type DeliveryStatus = { ready: boolean; token: string | null };
+type SubmissionResult = { accepted?: boolean; message?: string; errors?: Record<string, string>; error?: string };
 
 export function InquiryForm({
   initialCategory,
@@ -24,7 +26,7 @@ export function InquiryForm({
   useEffect(() => {
     let active = true;
     fetch("/api/inquiry", { cache: "no-store" })
-      .then((r) => r.json())
+      .then((r) => r.json() as Promise<DeliveryStatus>)
       .then((d) => {
         if (active) setDelivery(d);
       })
@@ -53,10 +55,10 @@ export function InquiryForm({
           token: delivery.token || "",
         }),
       });
-      const result = await r.json();
+      const result = await r.json() as SubmissionResult;
       if (r.ok && result.accepted) {
         setAccepted(true);
-        setStatus(result.message);
+        setStatus(result.message || "The email service accepted your inquiry for delivery.");
       } else {
         setErrors(result.errors || {});
         setStatus(

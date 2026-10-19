@@ -13,12 +13,14 @@ type Slug = keyof typeof strategyContent;
 export function generateStaticParams() {
   return Object.keys(strategyContent).map((slug) => ({ slug }));
 }
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const s = strategyContent[params.slug as Slug];
-  return s ? pageMetadata(s.title, s.intro, `/strategies/${params.slug}`) : {};
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const s = strategyContent[slug as Slug];
+  return s ? pageMetadata(s.title, s.intro, `/strategies/${slug}`) : {};
 }
-export default function StrategyPage({ params }: { params: { slug: string } }) {
-  const s = strategyContent[params.slug as Slug];
+export default async function StrategyPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const s = strategyContent[slug as Slug];
   if (!s) notFound();
   return (
     <>
